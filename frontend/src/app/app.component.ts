@@ -1,41 +1,27 @@
-import { Component, signal } from '@angular/core';
-import { StatDisplayComponent, ControlsComponent } from './stat-dashboard.component';
-import { TodoListComponent } from './todo-list.component';
-import { ProfileHeaderComponent, ProfileEditorComponent } from './profile.component';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    StatDisplayComponent, 
-    ControlsComponent, 
-    TodoListComponent,
-    ProfileHeaderComponent,
-    ProfileEditorComponent
-  ],
+  imports: [RouterModule],
   template: `
-    <div class="app-layout">
-      <!-- Sidebar / Left Column -->
-      <aside class="sidebar">
-        <!-- Profile Section -->
-        <app-profile-header></app-profile-header>
-        <app-profile-editor></app-profile-editor>
+    <header class="navbar">
+      <div class="nav-content">
+        <a routerLink="/" class="logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+          TaskMaster
+        </a>
+        <nav class="nav-links">
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+          <a routerLink="/about" routerLinkActive="active">About</a>
+        </nav>
+      </div>
+    </header>
 
-        <!-- Stats / Dashboard Section -->
-        <div class="score-module">
-          <app-stat-display [value]="score()"></app-stat-display>
-          <app-controls 
-            (onDecrease)="decreaseScore()" 
-            (onIncrease)="increaseScore()">
-          </app-controls>
-        </div>
-      </aside>
-
-      <!-- Main Content / Right Column -->
-      <main class="main-content">
-        <app-todo-list></app-todo-list>
-      </main>
-    </div>
+    <main class="router-wrapper">
+      <router-outlet></router-outlet>
+    </main>
   `,
   styles: [`
     :host {
@@ -44,53 +30,55 @@ import { ProfileHeaderComponent, ProfileEditorComponent } from './profile.compon
       min-height: 100vh;
       font-family: system-ui, -apple-system, sans-serif;
     }
-    .app-layout {
-      display: grid;
-      grid-template-columns: 350px 1fr;
-      gap: 2rem;
+    .navbar {
+      background: #1e3a8a;
+      color: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: white;
+      text-decoration: none;
+      letter-spacing: -0.025em;
+    }
+    .logo svg {
+      color: #10b981;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .nav-links a {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+      padding: 0.5rem 0;
+    }
+    .nav-links a:hover {
+      color: white;
+    }
+    .nav-links a.active {
+      color: white;
+      border-bottom: 2px solid white;
+    }
+    .router-wrapper {
       padding: 2.5rem;
       max-width: 1200px;
       margin: 0 auto;
     }
-    @media (max-width: 768px) {
-      .app-layout {
-        grid-template-columns: 1fr;
-      }
-    }
-    .sidebar {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-    .score-module {
-      background: white;
-      border-radius: 12px;
-      padding: 1.5rem;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-      text-align: center;
-    }
-    
-    .main-content {
-      display: flex;
-      justify-content: flex-start;
-      flex-direction: column;
-    }
-    
-    /* Override internal component margins so they fit in the grid smoothly */
-    ::ng-deep .todo-container {
-      margin-top: 0 !important;
-      max-width: 100% !important;
-    }
   `]
 })
-export class AppComponent {
-  score = signal(100);
-  
-  decreaseScore() {
-    this.score.update(v => Math.max(0, v - 10));
-  }
-  
-  increaseScore() {
-    this.score.update(v => v + 10);
-  }
-}
+export class AppComponent {}
