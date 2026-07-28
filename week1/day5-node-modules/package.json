@@ -1,0 +1,13 @@
+{
+  "name": "exercise",
+  "version": "1.0.0",
+  "description": "",
+  "main": "day1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "transform": "node day5.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
