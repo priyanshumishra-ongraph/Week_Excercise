@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './home.component';
 import { TaskDetailComponent } from './task-detail.component';
 import { NotFoundComponent } from './not-found.component';
+import { SignupComponent } from './signup.component';
 
 export const routes: Routes = [
   { 
@@ -18,6 +19,11 @@ export const routes: Routes = [
     path: 'about', 
     loadComponent: () => import('./about.component').then(m => m.AboutComponent),
     title: 'About'
+  },
+  {
+    path: 'signup',
+    component: SignupComponent,
+    title: 'Sign Up'
   },
   { 
     path: '**', 

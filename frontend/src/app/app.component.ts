@@ -15,6 +15,7 @@ import { RouterModule } from '@angular/router';
         <nav class="nav-links">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
           <a routerLink="/about" routerLinkActive="active">About</a>
+          <a routerLink="/signup" routerLinkActive="active" class="btn-signup">Sign Up</a>
         </nav>
       </div>
     </header>
@@ -70,9 +71,20 @@ import { RouterModule } from '@angular/router';
     .nav-links a:hover {
       color: white;
     }
-    .nav-links a.active {
+    .nav-links a.active:not(.btn-signup) {
       color: white;
       border-bottom: 2px solid white;
+    }
+    .btn-signup {
+      background-color: #10b981;
+      color: white !important;
+      padding: 0.5rem 1rem !important;
+      border-radius: 6px;
+      font-weight: 600 !important;
+      transition: background-color 0.2s;
+    }
+    .btn-signup:hover {
+      background-color: #059669;
     }
     .router-wrapper {
       padding: 2.5rem;
