@@ -14,6 +14,7 @@ import { RouterModule } from '@angular/router';
         </a>
         <nav class="nav-links">
           <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a>
+          <a routerLink="/users" routerLinkActive="active">Directory</a>
           <a routerLink="/about" routerLinkActive="active">About</a>
           <a routerLink="/signup" routerLinkActive="active" class="btn-signup">Sign Up</a>
         </nav>
@@ -38,7 +39,7 @@ import { RouterModule } from '@angular/router';
       box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     .nav-content {
-      max-width: 1200px;
+      max-width: 1600px;
       margin: 0 auto;
       display: flex;
       justify-content: space-between;
@@ -88,7 +89,7 @@ import { RouterModule } from '@angular/router';
     }
     .router-wrapper {
       padding: 2.5rem;
-      max-width: 1200px;
+      max-width: 1600px;
       margin: 0 auto;
     }
   `]

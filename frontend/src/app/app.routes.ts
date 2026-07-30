@@ -3,6 +3,7 @@ import { HomeComponent } from './home.component';
 import { TaskDetailComponent } from './task-detail.component';
 import { NotFoundComponent } from './not-found.component';
 import { SignupComponent } from './signup.component';
+import { UsersComponent } from './users.component';
 
 export const routes: Routes = [
   { 
@@ -14,6 +15,11 @@ export const routes: Routes = [
     path: 'task/:id', 
     component: TaskDetailComponent,
     title: 'Task Details'
+  },
+  { 
+    path: 'users', 
+    component: UsersComponent,
+    title: 'Team Directory'
   },
   { 
     path: 'about', 
