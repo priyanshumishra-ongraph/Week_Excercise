@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of, map, startWith } from 'rxjs';
+import { Observable, catchError, of, map, startWith, BehaviorSubject, switchMap, debounceTime, distinctUntilChanged } from 'rxjs';
 
 // 1. Define Typed Data Interface
 export interface User {
@@ -30,9 +30,22 @@ interface UserState {
   template: `
     <div class="users-container">
       <div class="header">
-        <h2>Team Directory</h2>
-        <p>Live data fetched from JSONPlaceholder API</p>
-        <button class="btn-refresh" (click)="refreshData()">Refresh Data</button>
+        <div class="header-text">
+          <h2>Team Directory</h2>
+        </div>
+      
+        <div class="header-actions">
+          <div class="search-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input 
+              type="text" 
+              placeholder="Search users..." 
+              (input)="onSearch($event)"
+              [value]="searchTerm$.value"
+            >
+          </div>
+          <button class="btn-refresh" (click)="refreshData()">Refresh Data</button>
+        </div>
       </div>
 
       <!-- Use the Async Pipe to handle the Observable automatically -->
@@ -126,6 +139,34 @@ interface UserState {
     .btn-refresh:hover {
       border-color: #1e3a8a;
       background: #f8fafc;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon {
+      position: absolute;
+      left: 1rem;
+      color: #94a3b8;
+    }
+    .search-box input {
+      padding: 0.75rem 1rem 0.75rem 2.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      width: 250px;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus {
+      border-color: #3b82f6;
     }
     
     /* State Cards */
@@ -269,27 +310,36 @@ export class UsersComponent {
   // Expose an Observable that the template subscribes to via the async pipe
   usersState$!: Observable<UserState>;
 
+  searchTerm$ = new BehaviorSubject<string>('');
+
   constructor() {
-    this.refreshData();
+    this.usersState$ = this.searchTerm$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(term => {
+        const url = term.trim() 
+          ? `https://jsonplaceholder.typicode.com/users?name_like=${encodeURIComponent(term.trim())}`
+          : 'https://jsonplaceholder.typicode.com/users';
+          
+        return this.http.get<User[]>(url).pipe(
+          map(users => ({ data: users, loading: false, error: null })),
+          catchError(error => of({ 
+            data: [], 
+            loading: false, 
+            error: error.message || 'Failed to fetch users' 
+          })),
+          startWith({ data: [], loading: true, error: null })
+        );
+      })
+    );
   }
 
   refreshData() {
-    // 2. Fetch data and map it into a clean UI state object
-    this.usersState$ = this.http.get<User[]>('https://jsonplaceholder.typicode.com/users').pipe(
-      // Map success response
-      map(users => ({ data: users, loading: false, error: null })),
-      
-      // Catch error and return a safe state object
-      catchError(error => {
-        return of({ 
-          data: [], 
-          loading: false, 
-          error: error.message || 'Failed to fetch users' 
-        });
-      }),
-      
-      // Emit an initial loading state BEFORE the HTTP request completes
-      startWith({ data: [], loading: true, error: null })
-    );
+    this.searchTerm$.next(this.searchTerm$.value);
+  }
+
+  onSearch(event: Event) {
+    const target = event.target as HTMLInputElement;
+    this.searchTerm$.next(target.value);
   }
 }
