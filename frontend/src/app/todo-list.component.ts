@@ -2,11 +2,13 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TodoService } from './todo.service';
+import { TimeAgoPipe } from './shared/time-ago.pipe';
+import { HighlightDirective } from './shared/highlight.directive';
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TimeAgoPipe, HighlightDirective],
   template: `
     <div class="todo-container">
       <div class="header-section">
@@ -36,7 +38,7 @@ import { TodoService } from './todo.service';
       <!-- Todo List with @for and @empty -->
       <div class="task-grid">
         @for (task of todoService.filteredTodos(); track task.id) {
-          <div class="task-card" [class.completed]="task.completed">
+          <div class="task-card" [class.completed]="task.completed" appHighlight="#f8fafc">
             
             <div class="card-title-row">
               <div class="title-wrapper">
@@ -100,7 +102,7 @@ import { TodoService } from './todo.service';
             <hr class="divider">
 
             <div class="card-footer">
-              <span class="created-date">{{ task.created_at || 'N/A' }}</span>
+              <span class="created-date">{{ task.created_at ? (task.created_at | timeAgo) : 'N/A' }}</span>
               <div class="assignee">
                 <span class="assignee-name">{{ task.assignee_names.join(', ') || 'Unknown User' }}</span>
               </div>

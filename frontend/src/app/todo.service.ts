@@ -47,7 +47,7 @@ export class TodoService {
       due_date: new Date(),
       assignee_initials_list: ['PM', 'AI'],
       created_at: 'Today',
-      assignee_names: ['Priyanshu Mishra', 'Antigravity'],
+      assignee_names: ['Priyanshu Mishra'],
       isEditing: false
     },
   ]);

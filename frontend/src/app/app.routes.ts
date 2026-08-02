@@ -4,6 +4,7 @@ import { TaskDetailComponent } from './task-detail.component';
 import { NotFoundComponent } from './not-found.component';
 import { SignupComponent } from './signup.component';
 import { UsersComponent } from './users.component';
+import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
   { 
@@ -19,6 +20,7 @@ export const routes: Routes = [
   { 
     path: 'users', 
     component: UsersComponent,
+    canActivate: [authGuard],
     title: 'Team Directory'
   },
   { 
