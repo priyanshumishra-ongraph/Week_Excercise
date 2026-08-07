@@ -1,0 +1,10 @@
+{
+  "name": "cli-notes",
+  "version": "1.0.0",
+  "description": "A CLI note tool using fs/promises",
+  "main": "notes.js",
+  "type": "module",
+  "bin": {
+    "notes": "./notes.js"
+  }
+}
