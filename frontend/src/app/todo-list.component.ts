@@ -4,11 +4,30 @@ import { RouterModule } from '@angular/router';
 import { TodoService } from './todo.service';
 import { TimeAgoPipe } from './shared/time-ago.pipe';
 import { HighlightDirective } from './shared/highlight.directive';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-todo-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, TimeAgoPipe, HighlightDirective],
+  imports: [
+    CommonModule, 
+    RouterModule, 
+    TimeAgoPipe, 
+    HighlightDirective,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCheckboxModule,
+    MatDividerModule
+  ],
   template: `
     <div class="todo-container">
       <div class="header-section">
@@ -16,21 +35,24 @@ import { HighlightDirective } from './shared/highlight.directive';
         
         <!-- Filter Buttons -->
         <div class="filters">
-          <button [class.active]="todoService.filter() === 'all'" (click)="todoService.setFilter('all')">All</button>
-          <button [class.active]="todoService.filter() === 'active'" (click)="todoService.setFilter('active')">Active</button>
-          <button [class.active]="todoService.filter() === 'completed'" (click)="todoService.setFilter('completed')">Completed</button>
+          <button mat-stroked-button [color]="todoService.filter() === 'all' ? 'primary' : ''" (click)="todoService.setFilter('all')" aria-label="Show all tasks">All</button>
+          <button mat-stroked-button [color]="todoService.filter() === 'active' ? 'primary' : ''" (click)="todoService.setFilter('active')" aria-label="Show active tasks">Active</button>
+          <button mat-stroked-button [color]="todoService.filter() === 'completed' ? 'primary' : ''" (click)="todoService.setFilter('completed')" aria-label="Show completed tasks">Completed</button>
         </div>
       </div>
 
       <!-- Input Area -->
       <div class="input-group">
-        <input 
-          #todoInput 
-          type="text" 
-          placeholder="What needs to be done?" 
-          (keyup.enter)="todoService.addTodo(todoInput.value); todoInput.value = ''"
-        >
-        <button class="btn-primary" (click)="todoService.addTodo(todoInput.value); todoInput.value = ''">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>What needs to be done?</mat-label>
+          <input 
+            matInput
+            #todoInput 
+            (keyup.enter)="todoService.addTodo(todoInput.value); todoInput.value = ''"
+            aria-label="New task title"
+          >
+        </mat-form-field>
+        <button mat-flat-button color="primary" class="btn-add" (click)="todoService.addTodo(todoInput.value); todoInput.value = ''" aria-label="Add new task">
           Add Task
         </button>
       </div>
@@ -38,76 +60,80 @@ import { HighlightDirective } from './shared/highlight.directive';
       <!-- Todo List with @for and @empty -->
       <div class="task-grid">
         @for (task of todoService.filteredTodos(); track task.id) {
-          <div class="task-card" [class.completed]="task.completed" appHighlight="#f8fafc">
-            
-            <div class="card-title-row">
-              <div class="title-wrapper">
-                <input 
-                  type="checkbox" 
-                  class="custom-checkbox"
+          <mat-card class="task-card" [class.completed]="task.completed" appHighlight="#f8fafc">
+            <mat-card-header>
+              <div class="card-title-row">
+                <mat-checkbox 
                   [checked]="task.completed" 
                   (change)="todoService.toggleTodo(task.id)"
-                >
+                  aria-label="Toggle task completion"
+                ></mat-checkbox>
                 
                 @if (!task.isEditing) {
                   <h3 [class.strike]="task.completed">{{ task.title }}</h3>
                 } @else {
-                  <input 
-                    #editInput
-                    type="text" 
-                    class="inline-edit-input"
-                    [value]="task.title" 
-                    (keyup.enter)="todoService.saveEdit(task.id, editInput.value)" 
-                    (blur)="todoService.saveEdit(task.id, editInput.value)"
-                    autofocus
-                  >
+                  <mat-form-field appearance="outline" class="inline-edit-field">
+                    <mat-label>Edit Task</mat-label>
+                    <input 
+                      matInput
+                      #editInput
+                      [value]="task.title" 
+                      (keyup.enter)="todoService.saveEdit(task.id, editInput.value)" 
+                      (blur)="todoService.saveEdit(task.id, editInput.value)"
+                      autofocus
+                      aria-label="Edit task title"
+                    >
+                  </mat-form-field>
                 }
               </div>
+            </mat-card-header>
+            
+            <mat-card-content>
               <div class="header-actions">
-                <a [routerLink]="['/task', task.id]" class="icon-btn view" title="View Details">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <a mat-icon-button color="primary" [routerLink]="['/task', task.id]" title="View Details" aria-label="View task details">
+                  <mat-icon>visibility</mat-icon>
                 </a>
-                <button class="icon-btn edit" (click)="todoService.editTodo(task.id)" title="Edit Task">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+                <button mat-icon-button color="accent" (click)="todoService.editTodo(task.id)" title="Edit Task" aria-label="Edit Task">
+                  <mat-icon>edit</mat-icon>
                 </button>
-                <button class="icon-btn delete" (click)="todoService.deleteTodo(task.id)" title="Delete Task">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                <button mat-icon-button color="warn" (click)="todoService.deleteTodo(task.id)" title="Delete Task" aria-label="Delete Task">
+                  <mat-icon>delete</mat-icon>
                 </button>
                 <span class="priority" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span>
               </div>
-            </div>
 
-            <div class="progress-section">
-              <div class="progress-header">
-                <span class="progress-label">{{ task.progress_label }}</span>
-                <span class="progress-stats">{{ task.progress_stats }}</span>
+              <div class="progress-section">
+                <div class="progress-header">
+                  <span class="progress-label">{{ task.progress_label }}</span>
+                  <span class="progress-stats">{{ task.progress_stats }}</span>
+                </div>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" [style.width]="task.progress_bar_fill + '%'"></div>
+                </div>
               </div>
-              <div class="progress-bar-bg">
-                <div class="progress-bar-fill" [style.width]="task.progress_bar_fill + '%'"></div>
-              </div>
-            </div>
 
-            <div class="due-row">
-              <div class="due-date">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                <span>{{ task.due_date | date:'MMM d' }}</span>
+              <div class="due-row">
+                <div class="due-date">
+                  <mat-icon inline="true" class="icon-small">event</mat-icon>
+                  <span>{{ task.due_date | date:'MMM d' }}</span>
+                </div>
+                <div class="avatars">
+                  @for (initials of task.assignee_initials_list; track initials) {
+                    <div class="avatar" aria-label="Assignee Initials">{{ initials }}</div>
+                  }
+                </div>
               </div>
-              <div class="avatars">
-                @for (initials of task.assignee_initials_list; track initials) {
-                  <div class="avatar">{{ initials }}</div>
-                }
-              </div>
-            </div>
+            </mat-card-content>
 
-            <hr class="divider">
+            <mat-divider></mat-divider>
 
-            <div class="card-footer">
+            <mat-card-actions class="card-footer">
               <span class="created-date">{{ task.created_at ? (task.created_at | timeAgo) : 'N/A' }}</span>
               <div class="assignee">
                 <span class="assignee-name">{{ task.assignee_names.join(', ') || 'Unknown User' }}</span>
               </div>
-            </div>
-          </div>
+            </mat-card-actions>
+          </mat-card>
         } @empty {
           <div class="empty-state">
             <p>Nothing to see here. Add a task or change the filter!</p>
@@ -119,7 +145,7 @@ import { HighlightDirective } from './shared/highlight.directive';
       <div class="todo-summary-footer">
         <span><strong>{{ todoService.remainingCount() }}</strong> items left</span>
         @if (todoService.todos().length > todoService.remainingCount()) {
-          <button class="btn-clear" (click)="todoService.clearCompleted()">Clear completed</button>
+          <button mat-button color="warn" (click)="todoService.clearCompleted()" aria-label="Clear completed tasks">Clear completed</button>
         }
       </div>
     </div>
@@ -128,50 +154,52 @@ import { HighlightDirective } from './shared/highlight.directive';
     .todo-container { width: 100%; }
     .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     h2 { margin: 0; color: #111827; font-size: 1.5rem; }
-    .input-group { display: flex; gap: 0.5rem; margin-bottom: 2rem; }
-    input[type="text"] { flex: 1; padding: 1rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem; outline: none; }
-    input[type="text"]:focus { border-color: #6366f1; }
-    .btn-primary { padding: 0 1.5rem; background-color: #10b981; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .input-group { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
+    .full-width { flex: 1; }
+    .btn-add { height: 56px; padding: 0 2rem; font-weight: bold; }
     .filters { display: flex; gap: 0.5rem; }
-    .filters button { padding: 0.5rem 1rem; background-color: white; border: 1px solid #e2e8f0; color: #4b5563; border-radius: 8px; cursor: pointer; font-weight: 500; }
-    .filters button.active { background-color: #111827; color: white; border-color: #111827; }
-    .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .task-card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
-    .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+    
+    .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+    .task-card { 
+      padding: 0; 
+      transition: transform 0.2s, box-shadow 0.2s; 
+    }
+    .task-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .task-card.completed { opacity: 0.6; }
-    .card-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
-    .title-wrapper { display: flex; align-items: flex-start; gap: 10px; flex: 1; }
-    .custom-checkbox { margin-top: 2px; width: 1.25rem; height: 1.25rem; accent-color: #10b981; cursor: pointer; flex-shrink: 0; }
-    .card-title-row h3 { margin: 0; font-size: 1.15rem; color: #1e293b; font-weight: 500; line-height: 1.3; word-break: break-word; }
+    
+    mat-card-header { padding: 16px 16px 0; }
+    mat-card-content { padding: 0 16px 16px; }
+    
+    .card-title-row { display: flex; align-items: flex-start; gap: 12px; width: 100%; margin-bottom: 8px; }
+    .card-title-row mat-checkbox { margin-top: -2px; }
+    h3 { margin: 0; font-size: 1.15rem; color: #1e293b; font-weight: 500; line-height: 1.3; word-break: break-word; }
     h3.strike { text-decoration: line-through; color: #94a3b8; }
-    .inline-edit-input { flex: 1; padding: 0.25rem 0.5rem; font-size: 1.15rem; border: 2px solid #10b981; border-radius: 4px; outline: none; font-family: inherit; width: 100%; }
-    .header-actions { display: flex; align-items: center; gap: 8px; }
-    .icon-btn { background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; border-radius: 4px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; text-decoration: none; }
-    .icon-btn:hover { background: #f1f5f9; }
-    .icon-btn.view:hover { color: #8b5cf6; background: #f3e8ff; }
-    .icon-btn.edit:hover { color: #3b82f6; background: #eff6ff; }
-    .icon-btn.delete:hover { color: #ef4444; background: #fef2f2; }
-    .priority { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background-color: #f1f5f9; color: #475569; white-space: nowrap; }
+    .inline-edit-field { flex: 1; }
+    
+    .header-actions { display: flex; align-items: center; gap: 4px; margin-bottom: 12px; }
+    .priority { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background-color: #f1f5f9; color: #475569; white-space: nowrap; margin-left: auto; }
     .priority.low { background-color: #e2e8f0; color: #334155; }
     .priority.high { background-color: #fee2e2; color: #ef4444; }
     .priority.medium { background-color: #fef3c7; color: #d97706; }
-    .progress-section { background-color: #ffffff; border-radius: 8px; padding: 12px; margin-bottom: 16px; border: 1px solid #f1f5f9; }
+    
+    .progress-section { background-color: #f8fafc; border-radius: 8px; padding: 12px; margin-bottom: 16px; }
     .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.8rem; }
     .progress-label { font-weight: 600; color: #0f172a; }
     .progress-stats { color: #64748b; }
     .progress-bar-bg { height: 6px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden; }
     .progress-bar-fill { height: 100%; background-color: #10b981; border-radius: 3px; transition: width 0.3s ease; }
-    .due-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    
+    .due-row { display: flex; justify-content: space-between; align-items: center; }
     .due-date { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; font-weight: 600; color: #64748b; }
+    .icon-small { font-size: 16px; height: 16px; width: 16px; margin-bottom: 2px; }
+    
     .avatars { display: flex; }
-    .avatar { width: 24px; height: 24px; border-radius: 50%; background-color: #8b5cf6; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; border: 2px solid #ffffff; }
+    .avatar { width: 24px; height: 24px; border-radius: 50%; background-color: #3f51b5; color: white; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; border: 2px solid #ffffff; }
     .avatar:not(:first-child) { margin-left: -6px; }
-    .divider { border: none; border-top: 1px solid #e2e8f0; margin: 0 -16px 12px -16px; }
-    .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #64748b; }
+    
+    .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #64748b; padding: 8px 16px; }
     .empty-state { grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; color: #94a3b8; font-size: 1.125rem; background: white; border: 2px dashed #e2e8f0; border-radius: 12px; }
-    .todo-summary-footer { display: flex; justify-content: space-between; color: #6b7280; font-size: 0.875rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
-    .btn-clear { background: transparent; border: none; color: #6b7280; cursor: pointer; }
-    .btn-clear:hover { color: #111827; text-decoration: underline; }
+    .todo-summary-footer { display: flex; justify-content: space-between; align-items: center; color: #6b7280; font-size: 0.875rem; padding-top: 1rem; border-top: 1px solid #e5e7eb; }
   `]
 })
 export class TodoListComponent {
