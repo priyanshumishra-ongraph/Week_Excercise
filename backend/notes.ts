@@ -1,45 +1,47 @@
-
 import { promises as fs } from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+
+interface Note {
+  title: string;
+  body: string;
+  createdAt: string;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const NOTES_FILE = path.join(__dirname, 'notes.json');
 
-async function getNotes() {
+async function getNotes(): Promise<Note[]> {
   try {
     const data = await fs.readFile(NOTES_FILE, 'utf8');
     return JSON.parse(data);
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === 'ENOENT') {
-    
       return [];
     }
     throw new Error(`Error reading notes: ${error.message}`);
   }
 }
 
-
-async function saveNotes(notes) {
+async function saveNotes(notes: Note[]): Promise<void> {
   try {
     await fs.writeFile(NOTES_FILE, JSON.stringify(notes, null, 2));
-  } catch (error) {
+  } catch (error: any) {
     throw new Error(`Error saving notes: ${error.message}`);
   }
 }
 
-
-async function addNote(title, body) {
+async function addNote(title?: string, body?: string): Promise<void> {
   if (!title || !body) {
     console.error('Error: Title and body are required to add a note.');
-    console.log('Usage: node notes.js add "Title" "Body"');
+    console.log('Usage: npx tsx notes.ts add "Title" "Body"');
     process.exit(1);
   }
 
   try {
     const notes = await getNotes();
- 
+    
     if (notes.find(n => n.title.toLowerCase() === title.toLowerCase())) {
       console.error(`Error: Note with title "${title}" already exists!`);
       process.exit(1);
@@ -48,13 +50,13 @@ async function addNote(title, body) {
     notes.push({ title, body, createdAt: new Date().toISOString() });
     await saveNotes(notes);
     console.log(`Success: Note "${title}" added successfully.`);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.message);
     process.exit(1);
   }
 }
 
-async function listNotes() {
+async function listNotes(): Promise<void> {
   try {
     const notes = await getNotes();
     if (notes.length === 0) {
@@ -67,18 +69,17 @@ async function listNotes() {
       console.log(`\n[${index + 1}] ${note.title}`);
       console.log(`    ${note.body}`);
     });
-    console.log('\n----');
-  } catch (error) {
+    console.log('\n------------------');
+  } catch (error: any) {
     console.error(error.message);
     process.exit(1);
   }
 }
 
-
-async function deleteNote(title) {
+async function deleteNote(title?: string): Promise<void> {
   if (!title) {
     console.error('Error: Title is required to delete a note.');
-    console.log('Usage: node notes.js delete "Title"');
+    console.log('Usage: npx tsx notes.ts delete "Title"');
     process.exit(1);
   }
 
@@ -93,13 +94,12 @@ async function deleteNote(title) {
 
     await saveNotes(updatedNotes);
     console.log(`Success: Note "${title}" deleted.`);
-  } catch (error) {
+  } catch (error: any) {
     console.error(error.message);
     process.exit(1);
   }
 }
 
-// Parse command line arguments
 const command = process.argv[2];
 const title = process.argv[3];
 const body = process.argv[4];
@@ -118,8 +118,8 @@ switch (command) {
   default:
     console.log('CLI Note Tool');
     console.log('Usage:');
-    console.log('  node notes.js add "Title" "Body content"');
-    console.log('  node notes.js list');
-    console.log('  node notes.js delete "Title"');
+    console.log('  npx tsx notes.ts add "Title" "Body content"');
+    console.log('  npx tsx notes.ts list');
+    console.log('  npx tsx notes.ts delete "Title"');
     break;
 }
