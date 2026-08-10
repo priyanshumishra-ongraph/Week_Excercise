@@ -1,42 +1,26 @@
-import express, { type Request, type Response, type NextFunction } from 'express';
+import express from 'express';
+import baseRoutes from './src/routes/base.routes.js';
+import taskRoutes from './src/routes/task.routes.js';
+import { requestLogger } from './src/middlewares/logger.middleware.js';
+import { notFoundHandler } from './src/middlewares/error.middleware.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1. Request Logger Middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-  const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] ${req.method} ${req.url}`);
-  next();
-});
 
-// Route 1: Root
-app.get('/', (req: Request, res: Response) => {
-  res.json({ message: 'Welcome to the Hello API!' });
-});
+app.use(express.json());
 
-// Route 2: /hello
-app.get('/hello', (req: Request, res: Response) => {
-  res.json({ message: 'Hello, World!' });
-});
+app.use(requestLogger);
 
-// Route 3: /api/status
-app.get('/api/status', (req: Request, res: Response) => {
-  res.json({ 
-    status: 'API is running smoothly.', 
-    uptime: process.uptime() 
-  });
-});
+// Routers
+app.use('/', baseRoutes);
+app.use('/api/tasks', taskRoutes);
 
-// 2. 404 Handler Middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json({
-    error: 'Not Found',
-    message: `Route ${req.url} does not exist on this server.`
-  });
-});
+// 404 Handler
+app.use(notFoundHandler);
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`Hello API server is listening on http://localhost:${PORT}`);
 });
+
