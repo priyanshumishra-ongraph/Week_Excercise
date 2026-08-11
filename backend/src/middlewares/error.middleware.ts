@@ -1,8 +1,35 @@
 import type { Request, Response, NextFunction } from 'express';
+import { ZodError } from 'zod';
 
 export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
-    error: 'Not Found',
+    status: 'error',
     message: `Route ${req.url} does not exist on this server.`
+  });
+};
+
+export const globalErrorHandler = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Validation failed',
+      details: err.issues ? err.issues.map(e => ({
+        path: e.path.join('.'),
+        message: e.message
+      })) : []
+    });
+  }
+
+  console.error('[Unhandled Error]', err);
+
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    status: 'error',
+    message: err.message || 'Internal Server Error'
   });
 };

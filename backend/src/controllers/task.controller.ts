@@ -4,9 +4,6 @@ import { type Task, tasks } from '../models/task.model.js';
 
 export const createTask = (req: Request, res: Response) => {
   const { title, priority, progress_label, progress_stats, progress_bar_fill, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
-  if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
-  }
 
   const newTask: Task = {
     id: randomUUID(),
