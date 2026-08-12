@@ -1,25 +1,44 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  // In a real app, this would be managed via localStorage and backend calls
-  private token: string | null = 'mock-jwt-token-12345';
+  private http = inject(HttpClient);
+  private tokenKey = 'auth_token';
 
   getToken(): string | null {
-    return this.token;
+    return localStorage.getItem(this.tokenKey);
   }
 
   isLoggedIn(): boolean {
-    return !!this.token;
+    return !!this.getToken();
   }
 
-  login() {
-    this.token = 'mock-jwt-token-12345';
+  register(userData: any): Observable<any> {
+    return this.http.post('/api/auth/register', userData).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem(this.tokenKey, res.token);
+        }
+      })
+    );
+  }
+
+  login(credentials: any): Observable<any> {
+    return this.http.post('/api/auth/login', credentials).pipe(
+      tap((res: any) => {
+        if (res.token) {
+          localStorage.setItem(this.tokenKey, res.token);
+        }
+      })
+    );
   }
 
   logout() {
-    this.token = null;
+    localStorage.removeItem(this.tokenKey);
   }
 }

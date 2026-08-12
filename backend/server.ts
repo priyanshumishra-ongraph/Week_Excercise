@@ -13,7 +13,9 @@ app.use(express.json());
 app.use(requestLogger);
 
 // Routers
+import authRoutes from './src/routes/auth.routes.js';
 app.use('/', baseRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 
 // Catch-all 404 Handler

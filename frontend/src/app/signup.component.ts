@@ -1,7 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { AuthService } from './core/auth.service';
 
 // Custom validator to check password strength (uppercase, lowercase, number, special char, min 12 chars)
 function passwordStrengthValidator(control: AbstractControl): ValidationErrors | null {
@@ -134,6 +135,12 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
               Account created successfully! Welcome to the team.
             </div>
           }
+          
+          @if (errorMsg) {
+            <div class="error-msg" style="text-align: center; margin-top: 1rem;">
+              {{ errorMsg }}
+            </div>
+          }
         </form>
       </div>
     </div>
@@ -259,8 +266,11 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 })
 export class SignupComponent {
   fb = inject(FormBuilder);
+  authService = inject(AuthService);
+  router = inject(Router);
   
   submittedSuccessfully = false;
+  errorMsg = '';
 
   // Initialize the Reactive Form
   signupForm = this.fb.group({
@@ -303,16 +313,22 @@ export class SignupComponent {
 
   onSubmit() {
     if (this.signupForm.valid) {
-      console.log('Form Submitted!', this.signupForm.value);
-      this.submittedSuccessfully = true;
+      this.errorMsg = '';
+      const { username, email, password } = this.signupForm.value;
       
-      // Reset the form back to pristine state
-      this.signupForm.reset();
-      
-      // Remove success message after 4 seconds
-      setTimeout(() => {
-        this.submittedSuccessfully = false;
-      }, 4000);
+      this.authService.register({ username, email, password }).subscribe({
+        next: () => {
+          this.submittedSuccessfully = true;
+          this.signupForm.reset();
+          
+          setTimeout(() => {
+            this.router.navigate(['/']);
+          }, 2000);
+        },
+        error: (err) => {
+          this.errorMsg = err.error?.error || err.error?.message || 'Registration failed';
+        }
+      });
     } else {
       // Mark all fields as touched so errors display if they try to submit an empty form
       this.signupForm.markAllAsTouched();
