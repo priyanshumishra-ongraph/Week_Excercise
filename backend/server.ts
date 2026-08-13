@@ -1,4 +1,6 @@
+import 'dotenv/config';
 import express from 'express';
+import { connectDB } from './src/config/db.js';
 import baseRoutes from './src/routes/base.routes.js';
 import taskRoutes from './src/routes/task.routes.js';
 import { requestLogger } from './src/middlewares/logger.middleware.js';
@@ -6,6 +8,9 @@ import { notFoundHandler, globalErrorHandler } from './src/middlewares/error.mid
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Connect to MongoDB
+await connectDB();
 
 // Built-in Middleware
 app.use(express.json());

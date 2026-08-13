@@ -27,3 +27,4 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 18**: Restructure the folder structure and worked on: In-memory CRUD API for "tasks" with correct status codes (201/204/404) and query filtering.
 * **Day 19**: Added the request validation + a central error handler returning consistent JSON errors
 * **Day 20**: Register + login endpoints (bcrypt + JWT) and an auth middleware guarding a protected route
+* **Day 21**: CRUD + filtered queries in Compass; add an index and re-run the query
