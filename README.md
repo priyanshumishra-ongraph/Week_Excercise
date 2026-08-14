@@ -28,3 +28,4 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 19**: Added the request validation + a central error handler returning consistent JSON errors
 * **Day 20**: Register + login endpoints (bcrypt + JWT) and an auth middleware guarding a protected route
 * **Day 21**: CRUD + filtered queries in Compass; add an index and re-run the query
+* **Day 22**: Define User & Task models with a ref; CRUD + populate the related user
