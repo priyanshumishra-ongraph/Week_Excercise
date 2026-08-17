@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+import mongoose from 'mongoose';
 
 export const notFoundHandler = (req: Request, res: Response, next: NextFunction) => {
   res.status(404).json({
@@ -22,6 +23,14 @@ export const globalErrorHandler = (
         path: e.path.join('.'),
         message: e.message
       })) : []
+    });
+  }
+
+  // Handle Mongoose CastError (invalid ObjectId format) which means resource not found
+  if (err instanceof mongoose.Error.CastError && err.kind === 'ObjectId') {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Resource not found or invalid ID format.'
     });
   }
 

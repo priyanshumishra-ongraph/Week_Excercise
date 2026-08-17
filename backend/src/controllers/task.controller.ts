@@ -1,8 +1,18 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import { Task } from '../models/task.model.js';
 import type { AuthRequest } from '../middlewares/auth.middleware.js';
 
-export const createTask = async (req: AuthRequest, res: Response) => {
+const getTaskId = (req: AuthRequest): string | null => {
+  const taskId = req.params.id;
+
+  if (typeof taskId !== 'string' || taskId.trim().length === 0) {
+    return null;
+  }
+
+  return taskId;
+};
+
+export const createTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   const { title, priority, progress_label, progress_stats, progress_bar_fill, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
   
   if (!req.user) {
@@ -27,11 +37,11 @@ export const createTask = async (req: AuthRequest, res: Response) => {
 
     res.status(201).json(newTask);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create task' });
+    next(error);
   }
 };
 
-export const getTasks = async (req: AuthRequest, res: Response) => {
+export const getTasks = async (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
@@ -47,37 +57,49 @@ export const getTasks = async (req: AuthRequest, res: Response) => {
     
     res.status(200).json(tasks);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch tasks' });
+    next(error);
   }
 };
 
-export const getTaskById = async (req: AuthRequest, res: Response) => {
+export const getTaskById = async (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
 
+  const taskId = getTaskId(req);
+
+  if (!taskId) {
+    return res.status(400).json({ error: 'Invalid task id' });
+  }
+
   try {
-    const task = await Task.findOne({ _id: req.params.id, user: req.user.id }).populate('user', 'username email');
+    const task = await Task.findOne({ _id: taskId, user: req.user.id }).populate('user', 'username email');
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
     res.status(200).json(task);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch task' });
+    next(error);
   }
 };
 
-export const updateTask = async (req: AuthRequest, res: Response) => {
+export const updateTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
 
+  const taskId = getTaskId(req);
+
+  if (!taskId) {
+    return res.status(400).json({ error: 'Invalid task id' });
+  }
+
   try {
-    const task = await Task.findOneAndUpdate(
-      { _id: req.params.id, user: req.user.id },
+    const task = await Task.findByIdAndUpdate(
+      taskId,
       req.body,
       { new: true, runValidators: true }
-    ).populate('user', 'username email');
+    ).where('user').equals(req.user.id).populate('user', 'username email');
 
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
@@ -85,23 +107,29 @@ export const updateTask = async (req: AuthRequest, res: Response) => {
 
     res.status(200).json(task);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to update task' });
+    next(error);
   }
 };
 
-export const deleteTask = async (req: AuthRequest, res: Response) => {
+export const deleteTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
   }
 
+  const taskId = getTaskId(req);
+
+  if (!taskId) {
+    return res.status(400).json({ error: 'Invalid task id' });
+  }
+
   try {
-    const task = await Task.findOneAndDelete({ _id: req.params.id, user: req.user.id });
+    const task = await Task.findOneAndDelete({ _id: taskId, user: req.user.id });
     if (!task) {
       return res.status(404).json({ error: 'Task not found' });
     }
 
     res.status(204).send();
   } catch (error) {
-    res.status(500).json({ error: 'Failed to delete task' });
+    next(error);
   }
 };

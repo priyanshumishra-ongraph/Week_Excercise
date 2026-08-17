@@ -1,11 +1,11 @@
-import type { Request, Response } from 'express';
+import type { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.model.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key-for-dev';
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   const { username, email, password } = req.body;
 
   try {
@@ -37,11 +37,11 @@ export const registerUser = async (req: Request, res: Response) => {
       user: { id: newUser._id, username: newUser.username, email: newUser.email }
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    next(error);
   }
 };
 
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   const { email, password } = req.body;
 
   try {
@@ -68,6 +68,6 @@ export const loginUser = async (req: Request, res: Response) => {
       user: { id: user._id, username: user.username, email: user.email }
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    next(error);
   }
 };
