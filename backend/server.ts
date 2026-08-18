@@ -1,35 +1,12 @@
 import 'dotenv/config';
-import express from 'express';
 import { connectDB } from './src/config/db.js';
-import baseRoutes from './src/routes/base.routes.js';
-import taskRoutes from './src/routes/task.routes.js';
-import { requestLogger } from './src/middlewares/logger.middleware.js';
-import { notFoundHandler, globalErrorHandler } from './src/middlewares/error.middleware.js';
+import { app } from './app.js';
 
-const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB
+// Connect to MongoDB then start the server
 await connectDB();
 
-// Built-in Middleware
-app.use(express.json());
-
-app.use(requestLogger);
-
-// Routers
-import authRoutes from './src/routes/auth.routes.js';
-app.use('/', baseRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/tasks', taskRoutes);
-
-// Catch-all 404 Handler
-app.use(notFoundHandler);
-
-// Global Error Handler
-app.use(globalErrorHandler);
-
-// Start the server
 app.listen(PORT, () => {
   console.log(`Hello API server is listening on http://localhost:${PORT}`);
 });
