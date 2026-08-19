@@ -29,3 +29,6 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 20**: Register + login endpoints (bcrypt + JWT) and an auth middleware guarding a protected route
 * **Day 21**: CRUD + filtered queries in Compass; add an index and re-run the query
 * **Day 22**: Define User & Task models with a ref; CRUD + populate the related user
+* **Day 23**: Persist the tasks CRUD API to MongoDB Atlas; handle connection + not-found errors
+* **Day 24**: Jest + Supertest tests for the tasks & auth endpoints covering happy + error paths
+* **Day 25**: Open a feature branch + PR; deploy the API to Render with Atlas and verify live endpoints
