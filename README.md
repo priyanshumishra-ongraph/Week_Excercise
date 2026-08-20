@@ -32,3 +32,4 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 23**: Persist the tasks CRUD API to MongoDB Atlas; handle connection + not-found errors
 * **Day 24**: Jest + Supertest tests for the tasks & auth endpoints covering happy + error paths
 * **Day 25**: Open a feature branch + PR; deploy the API to Render with Atlas and verify live endpoints
+* **Day26**: Write the app spec, DB schema, and a REST API contract
