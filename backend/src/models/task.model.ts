@@ -4,6 +4,7 @@ import type { IUser } from './user.model.js';
 export interface ITask extends Document {
   id?: string;
   title: string;
+  description?: string;
   completed: boolean;
   priority: string;
   progress_label: string;
@@ -18,6 +19,7 @@ export interface ITask extends Document {
 
 const taskSchema = new Schema<ITask>({
   title: { type: String, required: true },
+  description: { type: String, trim: true },
   completed: { type: Boolean, default: false },
   priority: { type: String, default: 'Low' },
   progress_label: { type: String, default: 'New Task' },

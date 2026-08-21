@@ -13,7 +13,7 @@ const getTaskId = (req: AuthRequest): string | null => {
 };
 
 export const createTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const { title, priority, progress_label, progress_stats, progress_bar_fill, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
+  const { title, description, priority, progress_label, progress_stats, progress_bar_fill, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
   
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
@@ -22,6 +22,7 @@ export const createTask = async (req: AuthRequest, res: Response, next: NextFunc
   try {
     const newTask = await Task.create({
       title,
+      description,
       priority,
       progress_label,
       progress_stats,

@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const createTaskSchema = z.object({
   title: z.string().min(1, 'Title is required').trim(),
+  description: z.string().trim().optional(),
   priority: z.string().optional(),
   progress_label: z.string().optional(),
   progress_stats: z.string().optional(),
@@ -14,6 +15,7 @@ export const createTaskSchema = z.object({
 
 export const updateTaskSchema = z.object({
   title: z.string().min(1, 'Title cannot be empty').trim().optional(),
+  description: z.string().trim().optional(),
   completed: z.boolean().optional(),
   priority: z.string().optional(),
   progress_label: z.string().optional(),

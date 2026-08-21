@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 export interface Todo {
   id: string | number;
   title: string;
+  description?: string;
   completed: boolean;
   priority: string;
   progress_label: string;
@@ -64,11 +65,12 @@ export class TodoService {
     });
   }
 
-  addTodo(text: string) {
+  addTodo(text: string, description: string = '') {
     if (!text.trim()) return;
     
     const newTodoPayload = {
       title: text.trim(),
+      description: description.trim(),
       priority: 'Low',
       progress_label: 'New Task',
       progress_stats: '0%',
