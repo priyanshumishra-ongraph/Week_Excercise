@@ -1,5 +1,6 @@
-import { Injectable, signal, computed, inject } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { AuthService } from './core/auth.service';
 
 export interface Todo {
   id: string | number;
@@ -24,6 +25,7 @@ export type FilterType = 'all' | 'active' | 'completed';
 })
 export class TodoService {
   private http = inject(HttpClient);
+  private authService = inject(AuthService);
   private apiUrl = '/api/tasks';
 
   todos = signal<Todo[]>([]);
@@ -40,7 +42,15 @@ export class TodoService {
   remainingCount = computed(() => this.todos().filter(t => !t.completed).length);
 
   constructor() {
-    this.loadTodos();
+    effect(() => {
+      // Whenever currentUser changes, if they are logged in, fetch their todos
+      if (this.authService.currentUser()) {
+        this.loadTodos();
+      } else {
+        // Clear tasks on logout
+        this.todos.set([]);
+      }
+    });
   }
 
   loadTodos() {

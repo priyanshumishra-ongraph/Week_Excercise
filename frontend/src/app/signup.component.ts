@@ -316,7 +316,7 @@ export class SignupComponent {
       this.errorMsg = '';
       const { username, email, password } = this.signupForm.value;
       
-      this.authService.register({ username, email, password }).subscribe({
+      this.authService.register({ name: username, email, password }).subscribe({
         next: () => {
           this.submittedSuccessfully = true;
           this.signupForm.reset();

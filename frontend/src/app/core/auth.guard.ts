@@ -10,6 +10,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  // Not logged in, redirect to signup or login page
-  return router.createUrlTree(['/signup']);
+  // Not logged in, redirect to login page
+  return router.createUrlTree(['/login']);
 };

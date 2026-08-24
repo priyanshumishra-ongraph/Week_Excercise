@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from './core/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,14 @@ import { MatIconModule } from '@angular/material/icon';
         <a mat-button routerLink="/" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}" aria-label="Dashboard">Dashboard</a>
         <a mat-button routerLink="/users" routerLinkActive="active-link" aria-label="Team Directory">Directory</a>
         <a mat-button routerLink="/about" routerLinkActive="active-link" aria-label="About Us">About</a>
-        <a mat-flat-button color="accent" routerLink="/signup" aria-label="Sign Up" class="btn-signup">Sign Up</a>
+        
+        @if (authService.currentUser()) {
+          <span class="user-greeting">Hi, {{ authService.currentUser()?.name }}</span>
+          <button mat-flat-button color="warn" (click)="authService.logout()" aria-label="Log Out" class="btn-signup">Log Out</button>
+        } @else {
+          <a mat-button routerLink="/login" routerLinkActive="active-link" aria-label="Log In">Log In</a>
+          <a mat-flat-button color="accent" routerLink="/signup" aria-label="Sign Up" class="btn-signup">Sign Up</a>
+        }
       </nav>
     </mat-toolbar>
 
@@ -67,6 +75,11 @@ import { MatIconModule } from '@angular/material/icon';
     .btn-signup {
       margin-left: 0.5rem;
     }
+    .user-greeting {
+      margin-left: 1rem;
+      margin-right: 0.5rem;
+      font-weight: 500;
+    }
     .router-wrapper {
       padding: 2.5rem;
       max-width: 1600px;
@@ -74,4 +87,6 @@ import { MatIconModule } from '@angular/material/icon';
     }
   `]
 })
-export class AppComponent {}
+export class AppComponent {
+  authService = inject(AuthService);
+}
