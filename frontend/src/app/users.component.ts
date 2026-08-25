@@ -73,12 +73,12 @@ interface UserState {
           <div class="users-grid">
             @for (user of state.data; track user.id) {
               <div class="user-card">
-                <div class="card-top">
-                  <div class="avatar">{{ user.name.charAt(0) }}</div>
-                  <div class="user-info">
-                    <h3>{{ user.name }}</h3>
-                    <span class="username">&#64;{{ user.username }}</span>
-                  </div>
+                <div class="card-header-bg"></div>
+                <div class="avatar">{{ user.name.charAt(0) }}</div>
+                
+                <div class="user-info">
+                  <h3>{{ user.name }}</h3>
+                  <span class="username">&#64;{{ user.username }}</span>
                 </div>
                 
                 <div class="contact">
@@ -93,6 +93,13 @@ interface UserState {
                 </div>
               </div>
             }
+          </div>
+        }
+        <!-- Empty State -->
+        @if (!state.loading && !state.error && state.data.length === 0) {
+          <div class="state-card empty">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;"><circle cx="12" cy="12" r="10"/><path d="m16 16-4-4-4 4"/><path d="M12 8v.01"/></svg>
+            <p>No team members found matching your search.</p>
           </div>
         }
       }
@@ -128,7 +135,7 @@ interface UserState {
     }
     .btn-refresh {
       background: white;
-      color: #1e3a8a;
+      color: #611f69;
       border: 2px solid #e5e7eb;
       padding: 0.75rem 1.5rem;
       border-radius: 8px;
@@ -137,8 +144,9 @@ interface UserState {
       transition: all 0.2s;
     }
     .btn-refresh:hover {
-      border-color: #1e3a8a;
-      background: #f8fafc;
+      border-color: #611f69;
+      background: #fdf2f8;
+      color: #611f69;
     }
     
     .header-actions {
@@ -166,7 +174,33 @@ interface UserState {
       transition: border-color 0.2s;
     }
     .search-box input:focus {
-      border-color: #3b82f6;
+      border-color: #611f69;
+    }
+    
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+      .header-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-box {
+        width: 100%;
+      }
+      .search-box input {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      .btn-refresh {
+        width: 100%;
+      }
+      h2 {
+        font-size: 2rem;
+      }
     }
     
     /* State Cards */
@@ -193,7 +227,7 @@ interface UserState {
       width: 40px;
       height: 40px;
       border: 4px solid #f1f5f9;
-      border-top-color: #3b82f6;
+      border-top-color: #611f69;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
@@ -213,68 +247,78 @@ interface UserState {
     /* Grid Layout */
     .users-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
       gap: 2rem;
     }
     .user-card {
       background: white;
-      border-radius: 12px;
-      padding: 1.75rem;
-      border: 1px solid #f1f5f9;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);
+      border-radius: 20px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
       display: flex;
       flex-direction: column;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #e2e8f0;
+      transition: transform 0.2s;
     }
     .user-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 15px 30px -5px rgba(0,0,0,0.08);
-      border-color: #e2e8f0;
     }
     
-    .card-top {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      margin-bottom: 1.5rem;
+    .card-header-bg {
+      width: 100%;
+      height: 70px;
+      background: linear-gradient(135deg, #611f69, #a05c9a);
     }
+    
     .avatar {
-      width: 50px;
-      height: 50px;
-      background: #f1f5f9;
-      color: #334155;
+      width: 72px;
+      height: 72px;
+      background: #fdf2f8;
+      border: 4px solid white;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
+      color: #611f69;
+      margin-top: -36px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 1;
+      font-size: 1.75rem;
       font-weight: 700;
-      flex-shrink: 0;
     }
+    
     .user-info {
-      display: flex;
-      flex-direction: column;
+      padding: 1.25rem 1.5rem 1.5rem 1.5rem;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      border-bottom: 1px solid #f1f5f9;
     }
     .user-info h3 {
-      margin: 0;
+      margin: 0 0 0.25rem 0;
+      font-size: 1.25rem;
       color: #0f172a;
-      font-size: 1.15rem;
-      font-weight: 700;
+      font-weight: 800;
     }
     .username {
       color: #64748b;
-      font-size: 0.9rem;
-      margin-top: 0.1rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      display: block;
     }
     
     .contact {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
       color: #475569;
       font-size: 0.9rem;
-      margin-bottom: 1.5rem;
-      padding-bottom: 1.5rem;
+      padding: 1.25rem;
+      width: 100%;
+      box-sizing: border-box;
       border-bottom: 1px solid #f1f5f9;
     }
     .contact svg {
@@ -282,9 +326,14 @@ interface UserState {
     }
     
     .company {
+      padding: 1.25rem 1.5rem 1.75rem 1.5rem;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      text-align: center;
       gap: 0.25rem;
+      width: 100%;
+      box-sizing: border-box;
     }
     .company-label {
       font-size: 0.75rem;
@@ -307,27 +356,39 @@ interface UserState {
 export class UsersComponent {
   private http = inject(HttpClient);
   
-  // Expose an Observable that the template subscribes to via the async pipe
   usersState$!: Observable<UserState>;
-
   searchTerm$ = new BehaviorSubject<string>('');
 
   constructor() {
+    // Fetch all users once
+    const allUsers$ = this.http.get<User[]>('https://jsonplaceholder.typicode.com/users').pipe(
+      catchError(error => {
+        console.error('Failed to fetch users', error);
+        return of([]);
+      })
+    );
+
+    // Combine search term with all users to filter client-side instantly
     this.usersState$ = this.searchTerm$.pipe(
-      debounceTime(300),
+      debounceTime(150),
       distinctUntilChanged(),
       switchMap(term => {
-        const url = term.trim() 
-          ? `https://jsonplaceholder.typicode.com/users?name_like=${encodeURIComponent(term.trim())}`
-          : 'https://jsonplaceholder.typicode.com/users';
-          
-        return this.http.get<User[]>(url).pipe(
-          map(users => ({ data: users, loading: false, error: null })),
-          catchError(error => of({ 
-            data: [], 
-            loading: false, 
-            error: error.message || 'Failed to fetch users' 
-          })),
+        return allUsers$.pipe(
+          map(users => {
+            if (!users || users.length === 0) {
+              return { data: [], loading: false, error: 'Failed to fetch users' };
+            }
+            const lowerTerm = term.toLowerCase().trim();
+            const filtered = lowerTerm 
+              ? users.filter(u => 
+                  u.name.toLowerCase().includes(lowerTerm) || 
+                  u.username.toLowerCase().includes(lowerTerm) ||
+                  u.email.toLowerCase().includes(lowerTerm) ||
+                  u.company.name.toLowerCase().includes(lowerTerm)
+                )
+              : users;
+            return { data: filtered, loading: false, error: null };
+          }),
           startWith({ data: [], loading: true, error: null })
         );
       })
@@ -335,7 +396,10 @@ export class UsersComponent {
   }
 
   refreshData() {
-    this.searchTerm$.next(this.searchTerm$.value);
+    // Just trigger a re-emission to show loading state temporarily and refresh
+    const currentTerm = this.searchTerm$.value;
+    this.searchTerm$.next('');
+    setTimeout(() => this.searchTerm$.next(currentTerm), 50);
   }
 
   onSearch(event: Event) {

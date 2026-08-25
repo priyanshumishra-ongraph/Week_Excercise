@@ -32,3 +32,7 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 23**: Persist the tasks CRUD API to MongoDB Atlas; handle connection + not-found errors
 * **Day 24**: Jest + Supertest tests for the tasks & auth endpoints covering happy + error paths
 * **Day 25**: Open a feature branch + PR; deploy the API to Render with Atlas and verify live endpoints
+* **Day 26**: Write the app spec, DB schema, and a REST API contract
+* **Day 27**: Working, validated REST API with auth
+* **Day 28**: Angular app consuming your API with a working auth flow
+* **Day 29**: Complete UI responsiveness (mobile/tablet), custom Material dialogs replacing native browser alerts, robust end-to-end loading/error/empty states, and backend Mongoose deprecation fixes

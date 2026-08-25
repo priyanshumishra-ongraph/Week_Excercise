@@ -23,7 +23,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.status === 401) {
         console.warn('Unauthorized access detected. Logging out and redirecting.');
         authService.logout();
-        router.navigate(['/signup']); // or '/login' if it existed
+        router.navigate(['/login']);
       }
       return throwError(() => error);
     })

@@ -43,16 +43,27 @@ import { MatDividerModule } from '@angular/material/divider';
 
       <!-- Input Area -->
       <div class="input-group">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>What needs to be done?</mat-label>
-          <input 
-            matInput
-            #todoInput 
-            (keyup.enter)="todoService.addTodo(todoInput.value); todoInput.value = ''"
-            aria-label="New task title"
-          >
-        </mat-form-field>
-        <button mat-flat-button color="primary" class="btn-add" (click)="todoService.addTodo(todoInput.value); todoInput.value = ''" aria-label="Add new task">
+        <div class="input-fields">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>What needs to be done?</mat-label>
+            <input 
+              matInput
+              #todoInput 
+              (keyup.enter)="descInput.focus()"
+              aria-label="New task title"
+            >
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description (optional)</mat-label>
+            <input 
+              matInput
+              #descInput 
+              (keyup.enter)="todoService.addTodo(todoInput.value, descInput.value); todoInput.value = ''; descInput.value = ''"
+              aria-label="New task description"
+            >
+          </mat-form-field>
+        </div>
+        <button mat-flat-button color="primary" class="btn-add" (click)="todoService.addTodo(todoInput.value, descInput.value); todoInput.value = ''; descInput.value = ''" aria-label="Add new task">
           Add Task
         </button>
       </div>
@@ -155,8 +166,9 @@ import { MatDividerModule } from '@angular/material/divider';
     .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
     h2 { margin: 0; color: #111827; font-size: 1.5rem; }
     .input-group { display: flex; gap: 1rem; margin-bottom: 1rem; align-items: flex-start; }
-    .full-width { flex: 1; }
-    .btn-add { height: 56px; padding: 0 2rem; font-weight: bold; }
+    .input-fields { display: flex; flex-direction: column; flex: 1; gap: 0.5rem; }
+    .full-width { flex: 1; width: 100%; }
+    .btn-add { height: 56px; padding: 0 2rem; font-weight: bold; margin-top: 4px; }
     .filters { display: flex; gap: 0.5rem; }
     
     .task-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }

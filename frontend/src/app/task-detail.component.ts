@@ -21,6 +21,13 @@ import { TodoService, Todo } from './todo.service';
           </div>
           
           <div class="detail-body">
+            @if (task.description) {
+              <div class="info-group full-width-group">
+                <label>Description</label>
+                <p class="description-text">{{ task.description }}</p>
+              </div>
+            }
+
             <div class="info-group">
               <label>Priority</label>
               <p class="priority" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</p>
@@ -112,6 +119,13 @@ import { TodoService, Todo } from './todo.service';
       margin-bottom: 0.5rem;
       text-transform: uppercase;
       letter-spacing: 0.05em;
+    }
+    .full-width-group {
+      grid-column: 1 / -1;
+    }
+    .description-text {
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
     .info-group p {
       margin: 0;
