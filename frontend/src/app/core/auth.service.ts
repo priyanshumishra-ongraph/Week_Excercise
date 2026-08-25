@@ -4,6 +4,8 @@ import { tap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
+import { environment } from '../../environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +13,7 @@ export class AuthService {
   private http = inject(HttpClient);
   private router = inject(Router);
   private tokenKey = 'auth_token';
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   currentUser = signal<{ id: string, name: string, email: string } | null>(null);
 
@@ -40,7 +43,7 @@ export class AuthService {
   }
 
   register(userData: any): Observable<any> {
-    return this.http.post('/api/auth/register', userData).pipe(
+    return this.http.post(`${this.apiUrl}/register`, userData).pipe(
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem(this.tokenKey, res.token);
@@ -51,7 +54,7 @@ export class AuthService {
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post('/api/auth/login', credentials).pipe(
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem(this.tokenKey, res.token);

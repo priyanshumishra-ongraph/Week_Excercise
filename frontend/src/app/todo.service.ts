@@ -1,6 +1,7 @@
 import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './core/auth.service';
+import { environment } from '../environments/environment';
 
 export interface Todo {
   id: string | number;
@@ -27,7 +28,7 @@ export type FilterType = 'all' | 'active' | 'completed';
 export class TodoService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
-  private apiUrl = '/api/tasks';
+  private apiUrl = `${environment.apiUrl}/tasks`;
 
   todos = signal<Todo[]>([]);
   isLoading = signal<boolean>(false);
