@@ -13,7 +13,7 @@ const getTaskId = (req: AuthRequest): string | null => {
 };
 
 export const createTask = async (req: AuthRequest, res: Response, next: NextFunction) => {
-  const { title, description, priority, progress_label, progress_stats, progress_bar_fill, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
+  const { title, description, project, priority, progress_label, due_date, assignee_initials_list, created_at, assignee_names } = req.body;
   
   if (!req.user) {
     return res.status(401).json({ error: 'User not authenticated' });
@@ -23,10 +23,9 @@ export const createTask = async (req: AuthRequest, res: Response, next: NextFunc
     const newTask = await Task.create({
       title,
       description,
+      project,
       priority,
       progress_label,
-      progress_stats,
-      progress_bar_fill,
       due_date,
       assignee_initials_list,
       created_at,
@@ -99,7 +98,7 @@ export const updateTask = async (req: AuthRequest, res: Response, next: NextFunc
     const task = await Task.findByIdAndUpdate(
       taskId,
       req.body,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).where('user').equals(req.user.id).populate('user', 'username email');
 
     if (!task) {

@@ -44,7 +44,7 @@ export class AuthService {
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem(this.tokenKey, res.token);
-          this.currentUser.set(res.user);
+          this.currentUser.set({ id: res.user.id, name: res.user.username || res.user.name, email: res.user.email });
         }
       })
     );
@@ -55,7 +55,7 @@ export class AuthService {
       tap((res: any) => {
         if (res.token) {
           localStorage.setItem(this.tokenKey, res.token);
-          this.currentUser.set(res.user);
+          this.currentUser.set({ id: res.user.id, name: res.user.username || res.user.name, email: res.user.email });
         }
       })
     );

@@ -35,3 +35,4 @@ This repository tracks my daily progress across a full stack development journey
 * **Day 26**: Write the app spec, DB schema, and a REST API contract
 * **Day 27**: Working, validated REST API with auth
 * **Day 28**: Angular app consuming your API with a working auth flow
+* **Day 29**: Complete UI responsiveness (mobile/tablet), custom Material dialogs replacing native browser alerts, robust end-to-end loading/error/empty states, and backend Mongoose deprecation fixes

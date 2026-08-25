@@ -6,6 +6,7 @@ export interface Todo {
   id: string | number;
   title: string;
   description?: string;
+  project?: string;
   completed: boolean;
   priority: string;
   progress_label: string;
@@ -29,36 +30,84 @@ export class TodoService {
   private apiUrl = '/api/tasks';
 
   todos = signal<Todo[]>([]);
+  isLoading = signal<boolean>(false);
+  error = signal<string | null>(null);
+  
   filter = signal<FilterType>('all');
+  projectFilter = signal<string | null>(null);
+  
+  baseProjects = signal<string[]>(['General', 'Marketing', 'Engineering']);
+
+  projects = computed(() => {
+    const allTodos = this.todos();
+    const base = this.baseProjects();
+    const taskProjects = allTodos.map(t => t.project).filter(p => !!p) as string[];
+    return Array.from(new Set([...base, ...taskProjects]));
+  });
 
   filteredTodos = computed(() => {
     const currentFilter = this.filter();
-    const allTodos = this.todos();
+    const currentProject = this.projectFilter();
+    let allTodos = this.todos();
+    
+    if (currentProject) {
+      allTodos = allTodos.filter(t => t.project === currentProject);
+    }
+    
     if (currentFilter === 'active') return allTodos.filter(t => !t.completed);
     if (currentFilter === 'completed') return allTodos.filter(t => t.completed);
     return allTodos;
   });
 
-  remainingCount = computed(() => this.todos().filter(t => !t.completed).length);
+  remainingCount = computed(() => this.filteredTodos().filter(t => !t.completed).length);
 
   constructor() {
     effect(() => {
       // Whenever currentUser changes, if they are logged in, fetch their todos
-      if (this.authService.currentUser()) {
+      const user = this.authService.currentUser();
+      if (user) {
         this.loadTodos();
+        const storedProjects = localStorage.getItem(`projects_${user.id}`);
+        if (storedProjects) {
+          try {
+            this.baseProjects.set(JSON.parse(storedProjects));
+          } catch (e) {
+            console.error('Failed to parse projects', e);
+          }
+        }
       } else {
         // Clear tasks on logout
         this.todos.set([]);
+        this.baseProjects.set(['General', 'Marketing', 'Engineering']);
       }
     });
   }
 
+  addProject(name: string) {
+    const trimmed = name.trim();
+    if (!trimmed) return;
+    
+    const current = this.baseProjects();
+    if (!current.includes(trimmed)) {
+      const updated = [...current, trimmed];
+      this.baseProjects.set(updated);
+      
+      const user = this.authService.currentUser();
+      if (user) {
+        localStorage.setItem(`projects_${user.id}`, JSON.stringify(updated));
+      }
+    }
+  }
+
   loadTodos() {
+    this.isLoading.set(true);
+    this.error.set(null);
     this.http.get<Todo[]>(this.apiUrl).subscribe({
       next: (data) => {
         // Ensure default UI fields exist if they were missing from the backend response
         const enrichedTodos = data.map(t => ({
           ...t,
+          project: t.project || 'General',
           priority: t.priority || 'Medium',
           progress_label: t.progress_label || (t.completed ? 'Completion' : 'In Progress'),
           progress_stats: t.progress_stats || (t.completed ? '100%' : '0%'),
@@ -70,32 +119,82 @@ export class TodoService {
           isEditing: false
         }));
         this.todos.set(enrichedTodos);
+        this.isLoading.set(false);
       },
-      error: (err) => console.error('Failed to load tasks', err)
+      error: (err) => {
+        console.error('Failed to load tasks', err);
+        this.error.set('Failed to load tasks from server. Please try again.');
+        this.isLoading.set(false);
+      }
     });
   }
 
-  addTodo(text: string, description: string = '') {
-    if (!text.trim()) return;
-    
+  addTodo(taskData: Partial<Todo>) {
     const newTodoPayload = {
-      title: text.trim(),
-      description: description.trim(),
-      priority: 'Low',
-      progress_label: 'New Task',
-      progress_stats: '0%',
-      progress_bar_fill: 0,
-      due_date: new Date(Date.now() + 86400000).toISOString(),
-      assignee_initials_list: ['PM'],
-      created_at: 'Just now',
-      assignee_names: ['Priyanshu Mishra']
+      title: taskData.title?.trim() || 'Untitled Task',
+      description: taskData.description?.trim() || '',
+      project: taskData.project || 'General',
+      priority: taskData.priority || 'Low',
+      progress_label: taskData.progress_label || 'To Do',
+      due_date: taskData.due_date || new Date(Date.now() + 86400000).toISOString(),
+      assignee_initials_list: taskData.assignee_initials_list || ['PM'],
+      created_at: taskData.created_at || new Date().toISOString(),
+      assignee_names: taskData.assignee_names || ['Priyanshu Mishra']
     };
 
     this.http.post<Todo>(this.apiUrl, newTodoPayload).subscribe({
       next: (createdTask) => {
-        this.todos.update(t => [{...createdTask, isEditing: false}, ...t]);
+        const completeTask = { 
+          ...newTodoPayload, 
+          ...createdTask, 
+          project: createdTask.project || newTodoPayload.project,
+          due_date: createdTask.due_date || newTodoPayload.due_date,
+          isEditing: false 
+        };
+        this.todos.update(t => [completeTask, ...t]);
       },
       error: (err) => console.error('Failed to add task', err)
+    });
+  }
+
+  updateTaskStatus(id: string | number, newStatus: string) {
+    const task = this.getTodoById(id);
+    if (!task) return;
+
+    let completed = false;
+    let progress_bar_fill = 0;
+    let progress_stats = '0%';
+
+    if (newStatus === 'Done' || newStatus === 'Completed') {
+      completed = true;
+      progress_bar_fill = 100;
+      progress_stats = '100%';
+    } else if (newStatus === 'In Progress') {
+      completed = false;
+      progress_bar_fill = 50;
+      progress_stats = '50%';
+    } else {
+      newStatus = 'To Do';
+      completed = false;
+      progress_bar_fill = 0;
+      progress_stats = '0%';
+    }
+
+    const payload = {
+      progress_label: newStatus,
+      completed,
+      progress_bar_fill,
+      progress_stats
+    };
+
+    // Optimistic update
+    this.todos.update(todos => todos.map(t => t.id === id ? { ...t, ...payload } : t));
+
+    this.http.put<Todo>(`${this.apiUrl}/${id}`, payload).subscribe({
+      error: (err) => {
+        console.error('Failed to update task status', err);
+        this.loadTodos(); // Revert on error
+      }
     });
   }
 
@@ -103,16 +202,17 @@ export class TodoService {
     this.todos.update(todos => todos.map(t => t.id === id ? { ...t, isEditing: true } : t));
   }
 
-  saveEdit(id: string | number, newTitle: string) {
-    const updatedTitle = newTitle.trim();
-    if (!updatedTitle) {
-      this.todos.update(todos => todos.map(t => t.id === id ? { ...t, isEditing: false } : t));
-      return;
-    }
+  saveEdit(id: string | number, updatedFields: Partial<Todo>) {
+    const existingTask = this.getTodoById(id);
+    if (!existingTask) return;
+    
+    const completeUpdatedTask = { ...existingTask, ...updatedFields };
 
-    this.http.put<Todo>(`${this.apiUrl}/${id}`, { title: updatedTitle }).subscribe({
+    this.http.put<Todo>(`${this.apiUrl}/${id}`, completeUpdatedTask).subscribe({
       next: (updatedTask) => {
-        this.todos.update(todos => todos.map(t => t.id === id ? { ...t, ...updatedTask, isEditing: false } : t));
+        // Fallback to our local merged copy if backend dropped fields
+        const finalTask = { ...completeUpdatedTask, ...updatedTask, isEditing: false };
+        this.todos.update(todos => todos.map(t => t.id === id ? finalTask : t));
       },
       error: (err) => console.error('Failed to update task', err)
     });
@@ -123,19 +223,8 @@ export class TodoService {
     if (!task) return;
 
     const isCompleted = !task.completed;
-    const progress_stats = isCompleted ? '100%' : (task.progress_bar_fill === 0 ? '0%' : '50%');
-    const progress_bar_fill = isCompleted ? 100 : (task.progress_bar_fill === 100 ? 50 : task.progress_bar_fill);
-
-    this.http.put<Todo>(`${this.apiUrl}/${id}`, { 
-      completed: isCompleted,
-      progress_stats,
-      progress_bar_fill
-    }).subscribe({
-      next: (updatedTask) => {
-        this.todos.update(todos => todos.map(t => t.id === id ? { ...t, ...updatedTask } : t));
-      },
-      error: (err) => console.error('Failed to toggle task', err)
-    });
+    const progress_label = isCompleted ? 'Completed' : 'To Do';
+    this.updateTaskStatus(id, progress_label);
   }
 
   deleteTodo(id: string | number) {
@@ -156,6 +245,14 @@ export class TodoService {
 
   setFilter(newFilter: FilterType) {
     this.filter.set(newFilter);
+  }
+
+  setProjectFilter(project: string | null) {
+    if (project !== null && this.projectFilter() === project) {
+      this.projectFilter.set(null);
+    } else {
+      this.projectFilter.set(project);
+    }
   }
 
   getTodoById(id: string | number): Todo | undefined {

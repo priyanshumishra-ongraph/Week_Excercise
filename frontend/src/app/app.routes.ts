@@ -29,7 +29,12 @@ export const routes: Routes = [
   { 
     path: 'about', 
     loadComponent: () => import('./about.component').then(m => m.AboutComponent),
-    title: 'About'
+    title: 'About TaskMaster'
+  },
+  { 
+    path: 'help', 
+    loadComponent: () => import('./help.component').then(m => m.HelpComponent),
+    title: 'Help & Docs'
   },
   {
     path: 'signup',
