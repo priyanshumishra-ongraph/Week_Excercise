@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, Inject, Renderer2 } from '@angular/core';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 
@@ -173,4 +173,71 @@ import { MatExpansionModule } from '@angular/material/expansion';
     }
   `]
 })
-export class HelpComponent {}
+export class HelpComponent implements OnInit, OnDestroy {
+  private scriptElement: any;
+
+  constructor(
+    private renderer: Renderer2,
+    @Inject(DOCUMENT) private document: Document
+  ) {}
+
+  ngOnInit() {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I create a new task?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "To create a new task, navigate to the All Tasks board and click the blue 'New Task' button in the top right corner. A dialog will appear where you can enter the task title, description, select a project, set a priority, and choose its initial status."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I move tasks across columns?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "TaskMaster features a fully interactive Kanban board. Simply click and hold any task card, drag it to the desired column (To Do, In Progress, or Completed), and release it. The task's progress and your dashboard KPIs will update automatically."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I add a new Project?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In the left sidebar, click the '+' icon next to the 'Projects' heading. You will be prompted to enter a new project name. Once created, the project will appear in your sidebar and will also be selectable from the dropdown when creating a new task."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I filter tasks by project?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Click on any project name in the left sidebar. Your board and KPI counters will instantly filter to show only tasks belonging to that specific project. To view all tasks again, click 'All Tasks' at the top of the sidebar."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I edit or delete a task?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Simply click on any task card on the board. The task details dialog will open, allowing you to edit any fields. If you wish to delete the task permanently, click the red Delete button in the bottom left corner of the dialog."
+          }
+        }
+      ]
+    };
+
+    this.scriptElement = this.renderer.createElement('script');
+    this.scriptElement.type = 'application/ld+json';
+    this.scriptElement.text = JSON.stringify(schema);
+    this.renderer.appendChild(this.document.head, this.scriptElement);
+  }
+
+  ngOnDestroy() {
+    if (this.scriptElement) {
+      this.renderer.removeChild(this.document.head, this.scriptElement);
+    }
+  }
+}
