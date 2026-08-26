@@ -26,7 +26,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
                 <span>How do I create a new task?</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <p>To create a new task, navigate to the <strong>All Tasks</strong> board and click the blue <strong>"New Task"</strong> button in the top right corner. A dialog will appear where you can enter the task title, description, select a project, set a priority, and choose its initial status.</p>
+            <p>To create a new task, navigate to the <strong>Dashboard</strong> and click the blue <strong>"New Task"</strong> button in the top right corner. A dialog will appear where you can enter the task title, description, select a project, set a priority, and choose its initial status.</p>
           </mat-expansion-panel>
 
           <mat-expansion-panel>
@@ -56,7 +56,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
                 <span>How do I filter tasks by project?</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <p>Click on any project name in the left sidebar. Your board and KPI counters will instantly filter to show only tasks belonging to that specific project. To view all tasks again, click "All Tasks" at the top of the sidebar.</p>
+            <p>Click on any project name in the left sidebar. Your board and KPI counters will instantly filter to show only tasks belonging to that specific project. To view all tasks again, click "Dashboard" at the top of the sidebar.</p>
           </mat-expansion-panel>
           
           <mat-expansion-panel>
@@ -191,7 +191,7 @@ export class HelpComponent implements OnInit, OnDestroy {
           "name": "How do I create a new task?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "To create a new task, navigate to the All Tasks board and click the blue 'New Task' button in the top right corner. A dialog will appear where you can enter the task title, description, select a project, set a priority, and choose its initial status."
+            "text": "To create a new task, navigate to the Dashboard and click the blue 'New Task' button in the top right corner. A dialog will appear where you can enter the task title, description, select a project, set a priority, and choose its initial status."
           }
         },
         {
@@ -215,7 +215,7 @@ export class HelpComponent implements OnInit, OnDestroy {
           "name": "How do I filter tasks by project?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Click on any project name in the left sidebar. Your board and KPI counters will instantly filter to show only tasks belonging to that specific project. To view all tasks again, click 'All Tasks' at the top of the sidebar."
+            "text": "Click on any project name in the left sidebar. Your board and KPI counters will instantly filter to show only tasks belonging to that specific project. To view all tasks again, click 'Dashboard' at the top of the sidebar."
           }
         },
         {

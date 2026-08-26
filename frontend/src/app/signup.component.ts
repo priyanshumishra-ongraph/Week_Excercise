@@ -117,7 +117,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
 
             <div *ngIf="submittedSuccessfully" class="success-banner">
               <mat-icon>check_circle</mat-icon>
-              <span>Account created successfully! Welcome to the team.</span>
+              <span>Account created successfully! Redirecting to login...</span>
             </div>
             
             <button mat-flat-button color="accent" type="submit" [disabled]="signupForm.invalid" class="submit-btn">
@@ -322,7 +322,7 @@ export class SignupComponent {
           this.signupForm.reset();
           
           setTimeout(() => {
-            this.router.navigate(['/']);
+            this.router.navigate(['/login']);
           }, 2000);
         },
         error: (err) => {

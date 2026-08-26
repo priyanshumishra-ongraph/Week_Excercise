@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { HomeComponent } from './home.component';
-import { TaskDetailComponent } from './task-detail.component';
 import { NotFoundComponent } from './not-found.component';
 import { SignupComponent } from './signup.component';
 import { LoginComponent } from './login.component';
@@ -13,12 +12,6 @@ export const routes: Routes = [
     component: HomeComponent,
     canActivate: [authGuard],
     title: 'Dashboard - TaskMaster'
-  },
-  { 
-    path: 'task/:id', 
-    component: TaskDetailComponent,
-    canActivate: [authGuard],
-    title: 'Task Details'
   },
   { 
     path: 'users', 

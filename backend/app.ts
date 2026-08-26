@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import express from 'express';
+import cors from 'cors';
 import baseRoutes from './src/routes/base.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
 import taskRoutes from './src/routes/task.routes.js';
@@ -9,6 +10,7 @@ import { notFoundHandler, globalErrorHandler } from './src/middlewares/error.mid
 export const app = express();
 
 // Built-in Middleware
+app.use(cors());
 app.use(express.json());
 
 // Logging Middleware

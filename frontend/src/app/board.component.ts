@@ -6,14 +6,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TodoService, Todo } from './todo.service';
 import { TaskDialogComponent } from './task-dialog.component';
+import { TimeAgoPipe } from './shared/time-ago.pipe';
+import { HighlightDirective } from './shared/highlight.directive';
 
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatIconModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, DragDropModule, MatIconModule, MatButtonModule, MatDialogModule, TimeAgoPipe, HighlightDirective],
   template: `
     <div class="board-header">
-      <h2>Project Board</h2>
+      <h2>{{ todoService.projectFilter() || 'Dashboard' }}</h2>
       <button mat-flat-button class="new-task-btn" (click)="openTaskDialog()">
         <mat-icon>add</mat-icon> New Task
       </button>
@@ -59,7 +61,7 @@ import { TaskDialogComponent } from './task-dialog.component';
           [cdkDropListConnectedTo]="[inProgressList, doneList]"
           (cdkDropListDropped)="drop($event, 'To Do')">
           
-          <div class="task-card" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of todoTasks()" cdkDrag (click)="openTaskDialog(task)">
+          <div class="task-card" appHighlight="#f1f5f9" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of todoTasks()" cdkDrag (click)="openTaskDialog(task)">
             <div class="task-labels">
               <span class="task-priority" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span>
               <span *ngIf="task.project && task.project !== 'General'" class="task-project">{{ task.project }}</span>
@@ -68,7 +70,7 @@ import { TaskDialogComponent } from './task-dialog.component';
             <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
             <div class="task-footer">
               <span class="assignee">{{ task.assignee_initials_list[0] }}</span>
-              <span class="date"><mat-icon>schedule</mat-icon> {{ task.due_date | date:'MMM d' }}</span>
+              <span class="date"><mat-icon>schedule</mat-icon> Created {{ task.created_at | timeAgo }}</span>
             </div>
           </div>
           
@@ -89,7 +91,7 @@ import { TaskDialogComponent } from './task-dialog.component';
           [cdkDropListConnectedTo]="[todoList, doneList]"
           (cdkDropListDropped)="drop($event, 'In Progress')">
           
-          <div class="task-card" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of inProgressTasks()" cdkDrag (click)="openTaskDialog(task)">
+          <div class="task-card" appHighlight="#f1f5f9" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of inProgressTasks()" cdkDrag (click)="openTaskDialog(task)">
             <div class="task-labels">
               <span class="task-priority" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span>
               <span *ngIf="task.project && task.project !== 'General'" class="task-project">{{ task.project }}</span>
@@ -98,7 +100,7 @@ import { TaskDialogComponent } from './task-dialog.component';
             <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
             <div class="task-footer">
               <span class="assignee">{{ task.assignee_initials_list[0] }}</span>
-              <span class="date"><mat-icon>schedule</mat-icon> {{ task.due_date | date:'MMM d' }}</span>
+              <span class="date"><mat-icon>schedule</mat-icon> Created {{ task.created_at | timeAgo }}</span>
             </div>
           </div>
           
@@ -119,7 +121,7 @@ import { TaskDialogComponent } from './task-dialog.component';
           [cdkDropListConnectedTo]="[todoList, inProgressList]"
           (cdkDropListDropped)="drop($event, 'Completed')">
           
-          <div class="task-card done-card" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of doneTasks()" cdkDrag (click)="openTaskDialog(task)">
+          <div class="task-card done-card" appHighlight="#f1f5f9" [ngClass]="'priority-' + task.priority.toLowerCase()" *ngFor="let task of doneTasks()" cdkDrag (click)="openTaskDialog(task)">
             <div class="task-labels">
               <span class="task-priority" [ngClass]="task.priority.toLowerCase()">{{ task.priority }}</span>
               <span *ngIf="task.project && task.project !== 'General'" class="task-project">{{ task.project }}</span>
@@ -128,7 +130,7 @@ import { TaskDialogComponent } from './task-dialog.component';
             <p *ngIf="task.description" class="task-desc">{{ task.description }}</p>
             <div class="task-footer">
               <span class="assignee">{{ task.assignee_initials_list[0] }}</span>
-              <span class="date"><mat-icon>check_circle</mat-icon> Completed</span>
+              <span class="date"><mat-icon>check_circle</mat-icon> Completed {{ task.created_at | timeAgo }}</span>
             </div>
           </div>
           

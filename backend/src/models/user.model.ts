@@ -18,7 +18,7 @@ const userSchema = new Schema<IUser>({
 userSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: Record<string, any>) {
     ret.id = ret._id;
     delete ret._id;
   }

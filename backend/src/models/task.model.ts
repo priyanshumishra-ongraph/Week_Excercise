@@ -35,7 +35,7 @@ const taskSchema = new Schema<ITask>({
 taskSchema.set('toJSON', {
   virtuals: true,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: Record<string, any>) {
     const { _id, ...rest } = ret;
     return { ...rest, id: _id };
   }

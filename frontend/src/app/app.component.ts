@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -42,6 +42,28 @@ export class AddProjectDialogComponent {
       this.dialogRef.close(this.projectName.trim());
     }
   }
+}
+
+import { Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+
+@Component({
+  selector: 'app-confirm-dialog',
+  standalone: true,
+  imports: [MatDialogModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>Confirm Deletion</h2>
+    <mat-dialog-content>
+      <p>{{ data.message }}</p>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button mat-dialog-close>Cancel</button>
+      <button mat-flat-button color="warn" [mat-dialog-close]="true">Delete</button>
+    </mat-dialog-actions>
+  `
+})
+export class ConfirmDialogComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { message: string }) {}
 }
 
 @Component({
@@ -115,9 +137,9 @@ export class AddProjectDialogComponent {
           <mat-sidenav #drawer [mode]="'side'" [opened]="authService.isLoggedIn()" class="sidenav">
             <mat-nav-list>
               <div class="nav-section-title">Views</div>
-              <a mat-list-item routerLink="/" routerLinkActive="active-nav-item" [routerLinkActiveOptions]="{exact: true}" (click)="todoService.setProjectFilter(null); closeSidenavOnMobile(drawer)">
+              <a mat-list-item routerLink="/" [class.active-nav-item]="isAllTasksActive()" (click)="todoService.setProjectFilter(null); closeSidenavOnMobile(drawer)">
                 <mat-icon matListItemIcon>view_kanban</mat-icon>
-                <div matListItemTitle>All Tasks</div>
+                <div matListItemTitle>Dashboard</div>
               </a>
               
               <a mat-list-item routerLink="/users" routerLinkActive="active-nav-item" (click)="closeSidenavOnMobile(drawer)">
@@ -132,16 +154,25 @@ export class AddProjectDialogComponent {
                 </button>
               </div>
               
-              <a mat-list-item *ngFor="let proj of todoService.projects(); let i = index" 
-                 routerLink="/"
-                 (click)="todoService.setProjectFilter(proj); closeSidenavOnMobile(drawer)" 
-                 [class.active-nav-item]="todoService.projectFilter() === proj" 
-                 style="cursor: pointer">
-                <div style="display: flex; align-items: center; width: 100%;">
-                  <span class="color-dot" [style.background]="getProjectColor(i)"></span>
-                  <span>{{ proj }}</span>
+              <div *ngFor="let proj of todoService.projects(); let i = index" 
+                   class="project-list-item"
+                   [class.active-nav-item]="isProjectActive(proj)">
+                <div class="project-content" (click)="todoService.setProjectFilter(proj); closeSidenavOnMobile(drawer); router.navigate(['/'])">
+                  <span class="color-dot-wrapper">
+                    <span class="color-dot" [style.background]="getProjectColor(i)"></span>
+                  </span>
+                  <span class="project-title">{{ proj }}</span>
                 </div>
-              </a>
+                <button mat-icon-button [matMenuTriggerFor]="projMenu" (click)="$event.stopPropagation()" class="proj-menu-btn" aria-label="Project Options">
+                  <mat-icon style="font-size: 18px; width: 18px; height: 18px; line-height: 18px;">more_vert</mat-icon>
+                </button>
+                <mat-menu #projMenu="matMenu">
+                  <button mat-menu-item (click)="deleteProject(proj)">
+                    <mat-icon color="warn">delete</mat-icon>
+                    <span style="color: #f44336;">Delete Project</span>
+                  </button>
+                </mat-menu>
+              </div>
             </mat-nav-list>
           </mat-sidenav>
 
@@ -257,13 +288,16 @@ export class AddProjectDialogComponent {
       color: #d1c2d3;
     }
     .sidenav mat-icon, .sidenav span, .sidenav div {
-      color: #d1c2d3;
+      color: #e2d8e4;
     }
-    .sidenav a, .sidenav .mdc-list-item__primary-text {
-      color: #d1c2d3 !important;
+    .sidenav a, .sidenav .mdc-list-item__primary-text, .sidenav .mat-mdc-list-item-title {
+      color: #e2d8e4 !important;
+      font-size: 0.95rem !important;
+      font-weight: 500 !important;
     }
     .sidenav a:hover {
-      background: rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.08);
+      color: #ffffff !important;
     }
     .nav-section-title {
       font-size: 0.8rem;
@@ -285,13 +319,63 @@ export class AddProjectDialogComponent {
     .active-nav-item, .active-nav-item span, .active-nav-item div, .active-nav-item .mdc-list-item__primary-text, .active-nav-item mat-icon {
       color: #ffffff !important;
     }
+    .project-list-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px 0 16px;
+      min-height: 48px;
+      cursor: pointer;
+      color: #e2d8e4;
+      transition: background 0.15s;
+    }
+    .project-list-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+    }
+    .project-content {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      overflow: hidden;
+      height: 100%;
+    }
+    .color-dot-wrapper {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      min-width: 24px;
+      margin-right: 16px;
+    }
     .color-dot {
       display: inline-block;
       width: 10px;
       height: 10px;
       border-radius: 50%;
-      margin-right: 12px;
       flex-shrink: 0;
+    }
+    .project-title {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: inherit;
+    }
+    .proj-menu-btn {
+      width: 28px; 
+      height: 28px; 
+      line-height: 28px; 
+      padding: 0;
+      opacity: 0.6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+    .proj-menu-btn:hover, .project-list-item:hover .proj-menu-btn {
+      opacity: 1;
     }
     .main-content {
       display: flex;
@@ -325,6 +409,7 @@ export class AppComponent {
   dialog = inject(MatDialog);
   
   isAuthPage = false;
+  currentUrl = signal(this.router.url);
   
   private projectColors = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
 
@@ -332,8 +417,22 @@ export class AppComponent {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe((event: any) => {
+      this.currentUrl.set(event.urlAfterRedirects || event.url);
       this.isAuthPage = event.url.includes('/login') || event.url.includes('/signup');
     });
+  }
+
+  isDashboard(): boolean {
+    const url = this.currentUrl();
+    return url === '/' || url === '' || url.startsWith('/?');
+  }
+
+  isProjectActive(proj: string): boolean {
+    return this.isDashboard() && this.todoService.projectFilter() === proj;
+  }
+
+  isAllTasksActive(): boolean {
+    return this.isDashboard() && !this.todoService.projectFilter();
   }
   
   getProjectColor(index: number): string {
@@ -349,6 +448,19 @@ export class AppComponent {
       if (name) {
         this.todoService.addProject(name);
         this.todoService.setProjectFilter(name);
+      }
+    });
+  }
+
+  deleteProject(name: string) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '400px',
+      data: { message: `Are you sure you want to delete the project "${name}"? Tasks assigned to this project will still exist.` }
+    });
+
+    dialogRef.afterClosed().subscribe(confirmed => {
+      if (confirmed) {
+        this.todoService.deleteProject(name);
       }
     });
   }

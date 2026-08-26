@@ -81,7 +81,7 @@ export class TodoService {
         this.todos.set([]);
         this.baseProjects.set(['General', 'Marketing', 'Engineering']);
       }
-    });
+    }, { allowSignalWrites: true });
   }
 
   addProject(name: string) {
@@ -97,6 +97,21 @@ export class TodoService {
       if (user) {
         localStorage.setItem(`projects_${user.id}`, JSON.stringify(updated));
       }
+    }
+  }
+
+  deleteProject(name: string) {
+    const current = this.baseProjects();
+    const updated = current.filter(p => p !== name);
+    this.baseProjects.set(updated);
+    
+    const user = this.authService.currentUser();
+    if (user) {
+      localStorage.setItem(`projects_${user.id}`, JSON.stringify(updated));
+    }
+    
+    if (this.projectFilter() === name) {
+      this.setProjectFilter(null);
     }
   }
 

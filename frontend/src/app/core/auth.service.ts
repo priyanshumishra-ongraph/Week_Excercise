@@ -43,14 +43,7 @@ export class AuthService {
   }
 
   register(userData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, userData).pipe(
-      tap((res: any) => {
-        if (res.token) {
-          localStorage.setItem(this.tokenKey, res.token);
-          this.currentUser.set({ id: res.user.id, name: res.user.username || res.user.name, email: res.user.email });
-        }
-      })
-    );
+    return this.http.post(`${this.apiUrl}/register`, userData);
   }
 
   login(credentials: any): Observable<any> {
