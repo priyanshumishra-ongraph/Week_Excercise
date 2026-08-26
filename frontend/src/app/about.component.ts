@@ -12,7 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
         <div class="logo-badge">
           <mat-icon>task_alt</mat-icon>
         </div>
-        <h1 class="gradient-text">TaskMaster</h1>
+        <h1 class="gradient-text">Capstone</h1>
         <p class="tagline">The modern way to organize, track, and accomplish your work.</p>
         <span class="version-badge">Version 2.0 (Beta)</span>
       </div>

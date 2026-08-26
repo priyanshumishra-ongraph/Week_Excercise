@@ -1,6 +1,6 @@
-# 📋 TaskMaster — Project Walkthrough & Architecture Report
+# 📋 Capstone — Project Walkthrough & Architecture Report
 
-Welcome to the comprehensive walkthrough of **TaskMaster**, a full-stack, collaborative task management and Kanban board application. This document details the end-to-end user journeys, architecture decisions, verification results, and UI features.
+Welcome to the comprehensive walkthrough of **Capstone**, a full-stack, collaborative task management and Kanban board application. This document details the end-to-end user journeys, architecture decisions, verification results, and UI features.
 
 ---
 

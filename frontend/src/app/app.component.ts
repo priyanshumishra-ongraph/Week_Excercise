@@ -89,9 +89,9 @@ export class ConfirmDialogComponent {
             <button mat-icon-button *ngIf="authService.isLoggedIn()" (click)="drawer.toggle()">
               <mat-icon>menu</mat-icon>
             </button>
-            <a routerLink="/" class="logo" aria-label="TaskMaster Home">
+            <a routerLink="/" class="logo" aria-label="Capstone Home">
               <mat-icon class="logo-icon">task_alt</mat-icon>
-              <span class="logo-text">TaskMaster</span>
+              <span class="logo-text">Capstone</span>
             </a>
           </div>
           

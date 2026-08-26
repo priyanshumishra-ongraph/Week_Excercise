@@ -30,7 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
             <mat-icon>login</mat-icon>
           </div>
           <mat-card-title>Welcome Back</mat-card-title>
-          <mat-card-subtitle>Log in to TaskMaster.</mat-card-subtitle>
+          <mat-card-subtitle>Log in to Capstone.</mat-card-subtitle>
         </mat-card-header>
         
         <mat-card-content>

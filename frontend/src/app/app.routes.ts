@@ -11,7 +11,7 @@ export const routes: Routes = [
     path: '', 
     component: HomeComponent,
     canActivate: [authGuard],
-    title: 'Dashboard - TaskMaster'
+    title: 'Dashboard - Capstone'
   },
   { 
     path: 'users', 
@@ -22,7 +22,7 @@ export const routes: Routes = [
   { 
     path: 'about', 
     loadComponent: () => import('./about.component').then(m => m.AboutComponent),
-    title: 'About TaskMaster'
+    title: 'About Capstone'
   },
   { 
     path: 'help', 

@@ -1,6 +1,6 @@
-# 🖥️ TaskMaster Frontend
+# 🖥️ Capstone Frontend
 
-The client application for TaskMaster, built with Angular 18 and Angular Material.
+The client application for Capstone, built with Angular 18 and Angular Material.
 
 ## 📸 Screenshots
 | Kanban Board | Dashboard Overview |

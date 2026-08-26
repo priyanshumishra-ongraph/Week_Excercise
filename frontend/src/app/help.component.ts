@@ -14,7 +14,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
           <mat-icon>menu_book</mat-icon>
         </div>
         <h1>Help & Documentation</h1>
-        <p>Learn how to get the most out of TaskMaster.</p>
+        <p>Learn how to get the most out of Capstone.</p>
       </div>
 
       <div class="faq-section">
@@ -36,7 +36,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
                 <span>How do I move tasks across columns?</span>
               </mat-panel-title>
             </mat-expansion-panel-header>
-            <p>TaskMaster features a fully interactive Kanban board. Simply click and hold any task card, drag it to the desired column (To Do, In Progress, or Completed), and release it. The task's progress and your dashboard KPIs will update automatically.</p>
+            <p>Capstone features a fully interactive Kanban board. Simply click and hold any task card, drag it to the desired column (To Do, In Progress, or Completed), and release it. The task's progress and your dashboard KPIs will update automatically.</p>
           </mat-expansion-panel>
 
           <mat-expansion-panel>
@@ -199,7 +199,7 @@ export class HelpComponent implements OnInit, OnDestroy {
           "name": "How do I move tasks across columns?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "TaskMaster features a fully interactive Kanban board. Simply click and hold any task card, drag it to the desired column (To Do, In Progress, or Completed), and release it. The task's progress and your dashboard KPIs will update automatically."
+            "text": "Capstone features a fully interactive Kanban board. Simply click and hold any task card, drag it to the desired column (To Do, In Progress, or Completed), and release it. The task's progress and your dashboard KPIs will update automatically."
           }
         },
         {

@@ -1,6 +1,6 @@
-# ⚙️ TaskMaster Backend API
+# ⚙️ Capstone Backend API
 
-The REST API backend for TaskMaster, built with Node.js, Express 5, TypeScript, and MongoDB Atlas.
+The REST API backend for Capstone, built with Node.js, Express 5, TypeScript, and MongoDB Atlas.
 
 ## 🛠️ Tech Stack
 - **Node.js & Express 5**: Fast, modular REST API.

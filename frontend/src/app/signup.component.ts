@@ -56,7 +56,7 @@ function passwordMatchValidator(control: AbstractControl): ValidationErrors | nu
             <mat-icon>person_add</mat-icon>
           </div>
           <mat-card-title>Create an Account</mat-card-title>
-          <mat-card-subtitle>Join TaskMaster today.</mat-card-subtitle>
+          <mat-card-subtitle>Join Capstone today.</mat-card-subtitle>
         </mat-card-header>
         
         <mat-card-content>

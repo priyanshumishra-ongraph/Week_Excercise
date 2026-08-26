@@ -1,4 +1,4 @@
-# 🚀 TaskMaster — Full-Stack Collaborative Task Management Platform
+# 🚀 Capstone — Full-Stack Collaborative Task Management Platform
 
 [![Angular](https://img.shields.io/badge/Angular-18-DD0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.dev/)
 [![NodeJS](https://img.shields.io/badge/Node.js-22-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Jest](https://img.shields.io/badge/Tested%20with-Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)](https://jestjs.io/)
 
-**TaskMaster** is a modern, enterprise-ready task management and Kanban board application inspired by Slack's aubergine aesthetic. Built with Angular 18 signals and standalone components on the frontend, and a modular TypeScript Express REST API with MongoDB Atlas on the backend.
+**Capstone** is a modern, enterprise-ready task management and Kanban board application inspired by Slack's aubergine aesthetic. Built with Angular 18 signals and standalone components on the frontend, and a modular TypeScript Express REST API with MongoDB Atlas on the backend.
 
 ---
 

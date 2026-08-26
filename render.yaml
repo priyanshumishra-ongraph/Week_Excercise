@@ -14,3 +14,5 @@ services:
         sync: false # Set this securely in the Render Dashboard
       - key: JWT_SECRET
         generateValue: true # Render will generate a strong secret automatically!
+      - key: FRONTEND_URL
+        value: "https://week-excercise.vercel.app" # allowed CORS origin (comma-separate for multiple)
