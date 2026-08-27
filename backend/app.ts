@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import express from 'express';
 import cors, { type CorsOptions } from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
 import baseRoutes from './src/routes/base.routes.js';
 import authRoutes from './src/routes/auth.routes.js';
 import taskRoutes from './src/routes/task.routes.js';
@@ -8,6 +11,7 @@ import { requestLogger } from './src/middlewares/logger.middleware.js';
 import { notFoundHandler, globalErrorHandler } from './src/middlewares/error.middleware.js';
 
 export const app = express();
+app.set('trust proxy', 1);
 const allowedOrigins = (process.env.FRONTEND_URL ?? '')
   .split(',')
   .map((origin) => origin.trim())
@@ -29,9 +33,19 @@ const corsOptions: CorsOptions = {
   credentials: true,
 };
 
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use(limiter);
+
 // Built-in Middleware
 app.use(cors(corsOptions));
+app.use(helmet());
 app.use(express.json());
+app.use(mongoSanitize());
 
 // Logging Middleware
 app.use(requestLogger);
