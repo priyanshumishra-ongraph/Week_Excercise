@@ -45,7 +45,6 @@ app.use(limiter);
 app.use(cors(corsOptions));
 app.use(helmet());
 app.use(express.json());
-app.use(mongoSanitize());
 
 // Logging Middleware
 app.use(requestLogger);
